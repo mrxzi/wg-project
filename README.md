@@ -12,16 +12,20 @@ Enhanced version of Infinite Yield with 50+ new features and improved security.
  - 7 years of development
 
 ## New Features in Wargaindo
-- Enhanced ESP system with better visibility
-- Advanced speed and jump hacks
-- Improved god mode with better protection
-- Aimbot targeting system
-- Auto-farm capabilities
-- Enhanced anti-AFK system
-- Secure mode for maximum protection
-- Anti-detection measures
-- Modern dark theme UI
-- Better error handling and performance
+- **Advanced Security System**: Anti-ban, anti-kick, anti-teleport protection
+- **Enhanced Anti-Detection**: Code obfuscation and randomization
+- **Modern UI Design**: Dark theme with gradient effects and animations
+- **Enhanced ESP System**: Better visibility and targeting
+- **Advanced Speed & Jump Hacks**: Improved movement capabilities
+- **Improved God Mode**: Better protection against death/ban
+- **Aimbot Targeting System**: Advanced targeting capabilities
+- **Auto-Farm System**: Automated farming capabilities
+- **Enhanced Anti-AFK**: Advanced anti-idle protection
+- **UI Customization**: Multiple themes (dark, neon, cyber)
+- **Animated Interface**: Smooth animations and hover effects
+- **Better Error Handling**: Improved performance and stability
+- **Security Status Monitoring**: Real-time security status display
+- **Maximum Security Mode**: All protections enabled at once
 
 ## Usage
 Wargaindo includes all original Infinite Yield commands plus many new enhanced features. Use the command bar to access all features!

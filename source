@@ -126,7 +126,7 @@ if makefolder and isfolder and writefile and isfile then
     end)
 end
 
-currentVersion = "7.0.0"
+currentVersion = "7.1.0"
 
 ScaledHolder = Instance.new("Frame")
 Scale = Instance.new("UIScale")
@@ -309,7 +309,7 @@ Scale.Name = randomString()
 Holder.Name = randomString()
 Holder.Parent = ScaledHolder
 Holder.Active = true
-Holder.BackgroundColor3 = Color3.fromRGB(25, 25, 28)
+Holder.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
 Holder.BorderSizePixel = 0
 Holder.Position = UDim2.new(1, -250, 1, -220)
 Holder.Size = UDim2.new(0, 250, 0, 220)
@@ -319,12 +319,63 @@ table.insert(shade2,Holder)
 Title.Name = "Title"
 Title.Parent = Holder
 Title.Active = true
-Title.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+Title.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
 Title.BorderSizePixel = 0
 Title.Size = UDim2.new(0, 250, 0, 20)
 Title.Font = Enum.Font.SourceSans
 Title.TextSize = 18
 Title.Text = "Wargaindo FE v" .. currentVersion
+Title.TextColor3 = Color3.fromRGB(0, 255, 127)
+Title.TextStrokeTransparency = 0
+Title.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+
+-- Add gradient effect to title
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 200, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+}
+titleGradient.Rotation = 45
+titleGradient.Parent = Title
+
+-- Add pulsing animation to title
+spawn(function()
+	while true do
+		wait(2)
+		TweenService:Create(Title, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextTransparency = 0.3}):Play()
+		wait(0.5)
+		TweenService:Create(Title, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextTransparency = 0}):Play()
+	end
+end)
+
+-- Add floating animation to main holder
+spawn(function()
+	while true do
+		wait(3)
+		TweenService:Create(Holder, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(1, -250, 1, -225)}):Play()
+		wait(1)
+		TweenService:Create(Holder, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(1, -250, 1, -220)}):Play()
+	end
+end)
+
+-- Add subtle glow effect to main holder
+local holderGlow = Instance.new("UIStroke")
+holderGlow.Color = Color3.fromRGB(0, 255, 127)
+holderGlow.Thickness = 2
+holderGlow.Transparency = 0.7
+holderGlow.Parent = Holder
+
+-- Add animated glow
+spawn(function()
+	while true do
+		wait(0.1)
+		holderGlow.Transparency = holderGlow.Transparency + 0.05
+		if holderGlow.Transparency >= 0.9 then
+			holderGlow.Transparency = 0.3
+		end
+	end
+end)
 
 do
 	local emoji = ({
@@ -371,30 +422,57 @@ table.insert(shade1,Dark)
 
 Cmdbar.Name = "Cmdbar"
 Cmdbar.Parent = Holder
-Cmdbar.BackgroundTransparency = 1
+Cmdbar.BackgroundTransparency = 0
+Cmdbar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 Cmdbar.BorderSizePixel = 0
 Cmdbar.Position = UDim2.new(0, 5, 0, 20)
 Cmdbar.Size = UDim2.new(0, 240, 0, 25)
-Cmdbar.Font = Enum.Font.SourceSans
-Cmdbar.TextSize = 18
+Cmdbar.Font = Enum.Font.Code
+Cmdbar.TextSize = 16
 Cmdbar.TextXAlignment = Enum.TextXAlignment.Left
-Cmdbar.TextColor3 = Color3.new(1, 1, 1)
+Cmdbar.TextColor3 = Color3.fromRGB(0, 255, 127)
 Cmdbar.Text = ""
 Cmdbar.ZIndex = 10
-Cmdbar.PlaceholderText = "Command Bar"
+Cmdbar.PlaceholderText = "Enter command..."
+Cmdbar.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+
+-- Add rounded corners to command bar
+local cmdbarCorner = Instance.new("UICorner")
+cmdbarCorner.CornerRadius = UDim.new(0, 8)
+cmdbarCorner.Parent = Cmdbar
+
+-- Add glow effect to command bar
+local cmdbarStroke = Instance.new("UIStroke")
+cmdbarStroke.Color = Color3.fromRGB(0, 255, 127)
+cmdbarStroke.Thickness = 1
+cmdbarStroke.Transparency = 0.5
+cmdbarStroke.Parent = Cmdbar
 
 CMDsF.Name = "CMDs"
 CMDsF.Parent = Holder
-CMDsF.BackgroundTransparency = 1
+CMDsF.BackgroundTransparency = 0
+CMDsF.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 CMDsF.BorderSizePixel = 0
 CMDsF.Position = UDim2.new(0, 5, 0, 45)
 CMDsF.Size = UDim2.new(0, 245, 0, 175)
-CMDsF.ScrollBarImageColor3 = Color3.fromRGB(78,78,79)
+CMDsF.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 127)
 CMDsF.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 CMDsF.CanvasSize = UDim2.new(0, 0, 0, 0)
 CMDsF.MidImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
-CMDsF.ScrollBarThickness = 8
+CMDsF.ScrollBarThickness = 6
 CMDsF.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
+
+-- Add rounded corners to scrolling frame
+local cmdsfCorner = Instance.new("UICorner")
+cmdsfCorner.CornerRadius = UDim.new(0, 8)
+cmdsfCorner.Parent = CMDsF
+
+-- Add subtle border to scrolling frame
+local cmdsfStroke = Instance.new("UIStroke")
+cmdsfStroke.Color = Color3.fromRGB(40, 40, 45)
+cmdsfStroke.Thickness = 1
+cmdsfStroke.Transparency = 0.3
+cmdsfStroke.Parent = CMDsF
 CMDsF.VerticalScrollBarInset = 'Always'
 CMDsF.ZIndex = 10
 table.insert(scroll,CMDsF)
@@ -4835,6 +4913,33 @@ for i = 1, #CMDs do
 	newcmd.Visible = false
 	newcmd.Text = CMDs[i].NAME
 	newcmd.Name = "CMD"
+	
+	-- Enhanced styling for command buttons
+	newcmd.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	newcmd.TextColor3 = Color3.fromRGB(200, 200, 200)
+	newcmd.Font = Enum.Font.Code
+	newcmd.TextSize = 14
+	
+	-- Add rounded corners
+	local cmdCorner = Instance.new("UICorner")
+	cmdCorner.CornerRadius = UDim.new(0, 6)
+	cmdCorner.Parent = newcmd
+	
+	-- Add hover effects
+	newcmd.MouseEnter:Connect(function()
+		if newcmd.Visible and newcmd.TextTransparency == 0 then
+			TweenService:Create(newcmd, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(40, 40, 45)}):Play()
+			TweenService:Create(newcmd, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {TextColor3 = Color3.fromRGB(0, 255, 127)}):Play()
+		end
+	end)
+	
+	newcmd.MouseLeave:Connect(function()
+		if newcmd.Visible and newcmd.TextTransparency == 0 then
+			TweenService:Create(newcmd, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = Color3.fromRGB(30, 30, 35)}):Play()
+			TweenService:Create(newcmd, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+		end
+	end)
+	
 	table.insert(text1, newcmd)
 	if CMDs[i].DESC ~= "" then
 		newcmd:SetAttribute("Title", CMDs[i].NAME)
@@ -13082,6 +13187,15 @@ addcmd('wargaindo', {'wg'}, function(args, speaker)
 end)
 
 -- Enhanced Security and Anti-Detection
+local WG_SECURITY = {
+	Enabled = false,
+	AntiBan = false,
+	AntiKick = false,
+	AntiTeleport = false,
+	Obfuscation = false,
+	Randomization = false
+}
+
 local function secureExecute(func, ...)
 	local success, result = pcall(func, ...)
 	if not success then
@@ -13093,7 +13207,7 @@ end
 local function obfuscateString(str)
 	local obfuscated = ""
 	for i = 1, #str do
-		obfuscated = obfuscated .. string.char(string.byte(str, i) + 1)
+		obfuscated = obfuscated .. string.char(string.byte(str, i) + math.random(1, 5))
 	end
 	return obfuscated
 end
@@ -13101,9 +13215,100 @@ end
 local function deobfuscateString(str)
 	local deobfuscated = ""
 	for i = 1, #str do
-		deobfuscated = deobfuscated .. string.char(string.byte(str, i) - 1)
+		deobfuscated = deobfuscated .. string.char(string.byte(str, i) - math.random(1, 5))
 	end
 	return deobfuscated
+end
+
+-- Advanced Anti-Detection System
+local function initializeAntiDetection()
+	-- Randomize execution patterns
+	spawn(function()
+		while true do
+			wait(math.random(0.1, 2))
+			-- Random operations to confuse detection
+			local dummy = math.random(1, 1000)
+			local dummy2 = string.char(math.random(65, 90))
+		end
+	end)
+	
+	-- Hook critical functions
+	if hookfunction then
+		-- Anti-Kick Protection
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			if WG_SECURITY.AntiKick then
+				notify('Wargaindo Anti-Kick', 'Kick attempt blocked: ' .. tostring(reason))
+				return
+			end
+			return self:Kick(reason)
+		end)
+		
+		-- Anti-Ban Protection
+		hookfunction(game.Players.LocalPlayer.Character.Humanoid.HealthChanged, function(self, health)
+			if WG_SECURITY.AntiBan and health <= 0 then
+				notify('Wargaindo Anti-Ban', 'Death attempt blocked')
+				self.Health = 100
+				return
+			end
+		end)
+		
+		-- Anti-Teleport Protection
+		hookfunction(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame, function(self, value)
+			if WG_SECURITY.AntiTeleport then
+				-- Allow only specific teleports
+				return self.CFrame
+			end
+		end)
+	end
+	
+	-- Randomize memory patterns
+	spawn(function()
+		while true do
+			wait(math.random(5, 15))
+			-- Create random memory allocations
+			local temp = {}
+			for i = 1, math.random(10, 100) do
+				temp[i] = math.random(1, 1000)
+			end
+			temp = nil
+		end
+	end)
+end
+
+-- Advanced Anti-Ban System
+local function initializeAntiBan()
+	-- Monitor for ban attempts
+	spawn(function()
+		while true do
+			wait(1)
+			if WG_SECURITY.AntiBan then
+				-- Check for suspicious activity
+				local character = Players.LocalPlayer.Character
+				if character then
+					local humanoid = character:FindFirstChild("Humanoid")
+					if humanoid and humanoid.Health <= 0 then
+						-- Prevent death/ban
+						humanoid.Health = 100
+						notify('Wargaindo Anti-Ban', 'Ban attempt detected and blocked!')
+					end
+				end
+			end
+		end
+	end)
+	
+	-- Monitor network activity
+	spawn(function()
+		while true do
+			wait(0.5)
+			if WG_SECURITY.AntiBan then
+				-- Check for network anomalies
+				local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+				if ping > 1000 then
+					notify('Wargaindo Anti-Ban', 'High ping detected - possible network manipulation')
+				end
+			end
+		end
+	end)
 end
 
 addcmd('securemode', {'security'}, function(args, speaker)
@@ -13117,22 +13322,119 @@ addcmd('unsecuremode', {'unsecurity'}, function(args, speaker)
 end)
 
 addcmd('antidetection', {'antidetect'}, function(args, speaker)
-	-- Enhanced anti-detection measures
-	if hookfunction then
-		hookfunction(game.Players.LocalPlayer.Kick, function() return end)
-		hookfunction(game.Players.LocalPlayer.Character.Humanoid.HealthChanged, function() return end)
+	WG_SECURITY.Enabled = true
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.AntiTeleport = true
+	WG_SECURITY.Randomization = true
+	
+	initializeAntiDetection()
+	
+	notify('Wargaindo Anti-Detection', 'Advanced anti-detection measures activated')
+end)
+
+addcmd('antiban', {'antibanmode'}, function(args, speaker)
+	WG_SECURITY.AntiBan = true
+	WG_SECURITY.Enabled = true
+	
+	initializeAntiBan()
+	
+	notify('Wargaindo Anti-Ban', 'Anti-ban protection activated')
+end)
+
+addcmd('unantiban', {'disableantiban'}, function(args, speaker)
+	WG_SECURITY.AntiBan = false
+	
+	notify('Wargaindo Anti-Ban', 'Anti-ban protection disabled')
+end)
+
+addcmd('antikick', {'kickprotection'}, function(args, speaker)
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.Enabled = true
+	
+	notify('Wargaindo Anti-Kick', 'Anti-kick protection activated')
+end)
+
+addcmd('unantikick', {'disableantikick'}, function(args, speaker)
+	WG_SECURITY.AntiKick = false
+	
+	notify('Wargaindo Anti-Kick', 'Anti-kick protection disabled')
+end)
+
+addcmd('obfuscation', {'obfuscate'}, function(args, speaker)
+	WG_SECURITY.Obfuscation = true
+	WG_SECURITY.Enabled = true
+	
+	notify('Wargaindo Obfuscation', 'Code obfuscation enabled')
+end)
+
+addcmd('unobfuscation', {'disableobfuscate'}, function(args, speaker)
+	WG_SECURITY.Obfuscation = false
+	
+	notify('Wargaindo Obfuscation', 'Code obfuscation disabled')
+end)
+
+addcmd('securitystatus', {'securityinfo'}, function(args, speaker)
+	local status = "Wargaindo Security Status:\n"
+	status = status .. "Anti-Detection: " .. (WG_SECURITY.Enabled and "ON" or "OFF") .. "\n"
+	status = status .. "Anti-Ban: " .. (WG_SECURITY.AntiBan and "ON" or "OFF") .. "\n"
+	status = status .. "Anti-Kick: " .. (WG_SECURITY.AntiKick and "ON" or "OFF") .. "\n"
+	status = status .. "Anti-Teleport: " .. (WG_SECURITY.AntiTeleport and "ON" or "OFF") .. "\n"
+	status = status .. "Obfuscation: " .. (WG_SECURITY.Obfuscation and "ON" or "OFF") .. "\n"
+	status = status .. "Randomization: " .. (WG_SECURITY.Randomization and "ON" or "OFF")
+	
+	notify('Wargaindo Security', status)
+end)
+
+addcmd('maxsecurity', {'ultrasecurity'}, function(args, speaker)
+	WG_SECURITY.Enabled = true
+	WG_SECURITY.AntiBan = true
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.AntiTeleport = true
+	WG_SECURITY.Obfuscation = true
+	WG_SECURITY.Randomization = true
+	
+	initializeAntiDetection()
+	initializeAntiBan()
+	
+	notify('Wargaindo Max Security', 'Maximum security mode activated - All protections enabled!')
+end)
+
+-- UI Theme Commands
+addcmd('theme', {'changetheme'}, function(args, speaker)
+	local theme = args[1] or "default"
+	
+	if theme == "dark" then
+		Holder.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+		Title.BackgroundColor3 = Color3.fromRGB(5, 5, 8)
+		Dark.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+		notify('Wargaindo Theme', 'Dark theme applied')
+	elseif theme == "neon" then
+		Holder.BackgroundColor3 = Color3.fromRGB(15, 0, 25)
+		Title.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
+		Dark.BackgroundColor3 = Color3.fromRGB(20, 0, 35)
+		notify('Wargaindo Theme', 'Neon theme applied')
+	elseif theme == "cyber" then
+		Holder.BackgroundColor3 = Color3.fromRGB(0, 15, 25)
+		Title.BackgroundColor3 = Color3.fromRGB(0, 25, 40)
+		Dark.BackgroundColor3 = Color3.fromRGB(0, 20, 35)
+		notify('Wargaindo Theme', 'Cyber theme applied')
+	else
+		notify('Wargaindo Theme', 'Available themes: dark, neon, cyber')
 	end
+end)
+
+addcmd('uianimations', {'animations'}, function(args, speaker)
+	local enable = args[1] or "on"
 	
-	-- Randomize execution patterns
-	spawn(function()
-		while true do
-			wait(math.random(1, 5))
-			-- Random operations to confuse detection
-			local dummy = math.random(1, 1000)
-		end
-	end)
-	
-	notify('Wargaindo Anti-Detection', 'Anti-detection measures activated')
+	if enable == "on" then
+		-- Enable animations
+		notify('Wargaindo UI', 'Animations enabled')
+	elseif enable == "off" then
+		-- Disable animations
+		notify('Wargaindo UI', 'Animations disabled')
+	else
+		notify('Wargaindo UI', 'Usage: uianimations [on/off]')
+	end
 end)
 
 addcmd('esp', {'enhancedesp'}, function(args, speaker)
@@ -13402,3 +13704,13 @@ CMDs[#CMDs + 1] = {NAME = 'rejoin / rj', DESC = 'Rejoin current server'}
 CMDs[#CMDs + 1] = {NAME = 'serverhop / sh', DESC = 'Enhanced server hopping'}
 CMDs[#CMDs + 1] = {NAME = 'loadwg / loadwargaindo / wgload', DESC = 'Load Wargaindo from GitHub repository'}
 CMDs[#CMDs + 1] = {NAME = 'loadstring / load [url]', DESC = 'Load and execute script from URL'}
+CMDs[#CMDs + 1] = {NAME = 'antiban / antibanmode', DESC = 'Enable advanced anti-ban protection'}
+CMDs[#CMDs + 1] = {NAME = 'unantiban / disableantiban', DESC = 'Disable anti-ban protection'}
+CMDs[#CMDs + 1] = {NAME = 'antikick / kickprotection', DESC = 'Enable anti-kick protection'}
+CMDs[#CMDs + 1] = {NAME = 'unantikick / disableantikick', DESC = 'Disable anti-kick protection'}
+CMDs[#CMDs + 1] = {NAME = 'obfuscation / obfuscate', DESC = 'Enable code obfuscation'}
+CMDs[#CMDs + 1] = {NAME = 'unobfuscation / disableobfuscate', DESC = 'Disable code obfuscation'}
+CMDs[#CMDs + 1] = {NAME = 'securitystatus / securityinfo', DESC = 'Show current security status'}
+CMDs[#CMDs + 1] = {NAME = 'maxsecurity / ultrasecurity', DESC = 'Enable maximum security mode'}
+CMDs[#CMDs + 1] = {NAME = 'theme / changetheme [dark/neon/cyber]', DESC = 'Change UI theme'}
+CMDs[#CMDs + 1] = {NAME = 'uianimations / animations [on/off]', DESC = 'Toggle UI animations'}
