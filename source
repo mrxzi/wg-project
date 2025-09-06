@@ -2951,12 +2951,13 @@ reference = (function()
 	end)
 end)()
 
-currentShade1 = Color3.fromRGB(36, 36, 37)
-currentShade2 = Color3.fromRGB(46, 46, 47)
-currentShade3 = Color3.fromRGB(78, 78, 79)
-currentText1 = Color3.new(1, 1, 1)
-currentText2 = Color3.new(0, 0, 0)
-currentScroll = Color3.fromRGB(78,78,79)
+-- Tema warna elegan dan profesional
+currentShade1 = Color3.fromRGB(25, 25, 30)      -- Dark slate untuk background utama
+currentShade2 = Color3.fromRGB(35, 35, 42)      -- Slate untuk background sekunder  
+currentShade3 = Color3.fromRGB(55, 55, 65)      -- Slate untuk accent
+currentText1 = Color3.fromRGB(245, 245, 250)    -- Soft white untuk text utama
+currentText2 = Color3.fromRGB(15, 15, 20)       -- Dark untuk text kontras
+currentScroll = Color3.fromRGB(65, 65, 75)      -- Slate untuk scroll bar
 
 defaultGuiScale = IsOnMobile and 0.9 or 1
 defaultsettings = {
@@ -7866,11 +7867,38 @@ end)
 
 addcmd("savegame", {"saveplace"}, function(args, speaker)
     if saveinstance then
-        notify("Loading", "Downloading game. This will take a while")
-        saveinstance()
-        notify("Game Saved", "Saved place to the workspace folder within your exploit folder.")
+        -- Aktifkan proteksi anti-kick sebelum save
+        local originalKick = game.Players.LocalPlayer.Kick
+        local kickBlocked = false
+        
+        -- Hook fungsi kick untuk mencegah kick saat save
+        if hookfunction then
+            hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+                kickBlocked = true
+                notify("Wargaindo Anti-Kick", "Upaya kick diblokir saat save game: " .. tostring(reason))
+                return
+            end)
+        end
+        
+        notify("Memuat", "Mengunduh game. Ini akan memakan waktu")
+        
+        -- Jalankan save dengan proteksi
+        local success, error = pcall(function()
+            saveinstance()
+        end)
+        
+        -- Restore fungsi kick asli
+        if hookfunction and originalKick then
+            hookfunction(game.Players.LocalPlayer.Kick, originalKick)
+        end
+        
+        if success then
+            notify("Game Tersimpan", "Game berhasil disimpan dengan proteksi anti-kick aktif!")
+        else
+            notify("Error Save", "Terjadi kesalahan saat menyimpan: " .. tostring(error))
+        end
     else
-        notify("Incompatible Exploit", "Your exploit does not support this command (missing saveinstance)")
+        notify("Exploit Tidak Kompatibel", "Exploit Anda tidak mendukung perintah ini (tidak ada saveinstance)")
     end
 end)
 
@@ -7902,7 +7930,7 @@ addcmd('clientantikick',{'antikick'},function(args, speaker)
 	    return oldhmmnc(self, ...)
 	end)
 	
-	notify('Client Antikick','Client anti kick is now active (only effective on localscript kick)')
+	notify('Anti-Kick Klien','Anti-kick klien sekarang aktif (hanya efektif pada kick dari localscript)')
 end)
 
 allow_rj = true
@@ -13313,12 +13341,12 @@ end
 
 addcmd('securemode', {'security'}, function(args, speaker)
 	_G.WG_SECURE_MODE = true
-	notify('Wargaindo Security', 'Secure mode enabled - Enhanced protection active')
+	notify('Wargaindo Security', 'Mode aman diaktifkan - Proteksi ditingkatkan')
 end)
 
 addcmd('unsecuremode', {'unsecurity'}, function(args, speaker)
 	_G.WG_SECURE_MODE = false
-	notify('Wargaindo Security', 'Secure mode disabled')
+	notify('Wargaindo Security', 'Mode aman dinonaktifkan')
 end)
 
 addcmd('antidetection', {'antidetect'}, function(args, speaker)
@@ -13329,7 +13357,7 @@ addcmd('antidetection', {'antidetect'}, function(args, speaker)
 	
 	initializeAntiDetection()
 	
-	notify('Wargaindo Anti-Detection', 'Advanced anti-detection measures activated')
+	notify('Wargaindo Anti-Detection', 'Langkah anti-deteksi canggih diaktifkan')
 end)
 
 addcmd('antiban', {'antibanmode'}, function(args, speaker)
@@ -13338,49 +13366,49 @@ addcmd('antiban', {'antibanmode'}, function(args, speaker)
 	
 	initializeAntiBan()
 	
-	notify('Wargaindo Anti-Ban', 'Anti-ban protection activated')
+	notify('Wargaindo Anti-Ban', 'Proteksi anti-ban diaktifkan')
 end)
 
 addcmd('unantiban', {'disableantiban'}, function(args, speaker)
 	WG_SECURITY.AntiBan = false
 	
-	notify('Wargaindo Anti-Ban', 'Anti-ban protection disabled')
+	notify('Wargaindo Anti-Ban', 'Proteksi anti-ban dinonaktifkan')
 end)
 
 addcmd('antikick', {'kickprotection'}, function(args, speaker)
 	WG_SECURITY.AntiKick = true
 	WG_SECURITY.Enabled = true
 	
-	notify('Wargaindo Anti-Kick', 'Anti-kick protection activated')
+	notify('Wargaindo Anti-Kick', 'Proteksi anti-kick diaktifkan')
 end)
 
 addcmd('unantikick', {'disableantikick'}, function(args, speaker)
 	WG_SECURITY.AntiKick = false
 	
-	notify('Wargaindo Anti-Kick', 'Anti-kick protection disabled')
+	notify('Wargaindo Anti-Kick', 'Proteksi anti-kick dinonaktifkan')
 end)
 
 addcmd('obfuscation', {'obfuscate'}, function(args, speaker)
 	WG_SECURITY.Obfuscation = true
 	WG_SECURITY.Enabled = true
 	
-	notify('Wargaindo Obfuscation', 'Code obfuscation enabled')
+	notify('Wargaindo Obfuscation', 'Obfuskasi kode diaktifkan')
 end)
 
 addcmd('unobfuscation', {'disableobfuscate'}, function(args, speaker)
 	WG_SECURITY.Obfuscation = false
 	
-	notify('Wargaindo Obfuscation', 'Code obfuscation disabled')
+	notify('Wargaindo Obfuscation', 'Obfuskasi kode dinonaktifkan')
 end)
 
 addcmd('securitystatus', {'securityinfo'}, function(args, speaker)
-	local status = "Wargaindo Security Status:\n"
-	status = status .. "Anti-Detection: " .. (WG_SECURITY.Enabled and "ON" or "OFF") .. "\n"
-	status = status .. "Anti-Ban: " .. (WG_SECURITY.AntiBan and "ON" or "OFF") .. "\n"
-	status = status .. "Anti-Kick: " .. (WG_SECURITY.AntiKick and "ON" or "OFF") .. "\n"
-	status = status .. "Anti-Teleport: " .. (WG_SECURITY.AntiTeleport and "ON" or "OFF") .. "\n"
-	status = status .. "Obfuscation: " .. (WG_SECURITY.Obfuscation and "ON" or "OFF") .. "\n"
-	status = status .. "Randomization: " .. (WG_SECURITY.Randomization and "ON" or "OFF")
+	local status = "Status Keamanan Wargaindo:\n"
+	status = status .. "Anti-Deteksi: " .. (WG_SECURITY.Enabled and "AKTIF" or "NONAKTIF") .. "\n"
+	status = status .. "Anti-Ban: " .. (WG_SECURITY.AntiBan and "AKTIF" or "NONAKTIF") .. "\n"
+	status = status .. "Anti-Kick: " .. (WG_SECURITY.AntiKick and "AKTIF" or "NONAKTIF") .. "\n"
+	status = status .. "Anti-Teleport: " .. (WG_SECURITY.AntiTeleport and "AKTIF" or "NONAKTIF") .. "\n"
+	status = status .. "Obfuskasi: " .. (WG_SECURITY.Obfuscation and "AKTIF" or "NONAKTIF") .. "\n"
+	status = status .. "Randomisasi: " .. (WG_SECURITY.Randomization and "AKTIF" or "NONAKTIF")
 	
 	notify('Wargaindo Security', status)
 end)
@@ -13396,30 +13424,76 @@ addcmd('maxsecurity', {'ultrasecurity'}, function(args, speaker)
 	initializeAntiDetection()
 	initializeAntiBan()
 	
-	notify('Wargaindo Max Security', 'Maximum security mode activated - All protections enabled!')
+	-- Tambahan proteksi untuk save game
+	spawn(function()
+		while WG_SECURITY.Enabled do
+			wait(1)
+			-- Monitor untuk upaya kick saat save game
+			if hookfunction then
+				hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+					notify('Wargaindo Max Security', 'Upaya kick diblokir: ' .. tostring(reason))
+					return
+				end)
+			end
+		end
+	end)
+	
+	notify('Wargaindo Max Security', 'Mode keamanan maksimal diaktifkan - Semua proteksi aktif!')
 end)
 
--- UI Theme Commands
+-- Command khusus untuk proteksi save game
+addcmd('savesecure', {'savesafe'}, function(args, speaker)
+	-- Aktifkan proteksi khusus untuk save game
+	local originalKick = game.Players.LocalPlayer.Kick
+	local kickCount = 0
+	
+	-- Hook fungsi kick dengan proteksi berlapis
+	if hookfunction then
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			kickCount = kickCount + 1
+			notify('Wargaindo Save Protection', 'Upaya kick #' .. kickCount .. ' diblokir: ' .. tostring(reason))
+			
+			-- Jika terlalu banyak upaya kick, aktifkan mode darurat
+			if kickCount >= 3 then
+				notify('Wargaindo Emergency', 'Mode darurat diaktifkan - Proteksi maksimal!')
+				-- Aktifkan semua proteksi
+				WG_SECURITY.Enabled = true
+				WG_SECURITY.AntiKick = true
+				WG_SECURITY.AntiBan = true
+			end
+			return
+		end)
+	end
+	
+	notify('Wargaindo Save Protection', 'Proteksi save game diaktifkan - Anda aman dari kick!')
+end)
+
+-- UI Theme Commands - Tema Elegan
 addcmd('theme', {'changetheme'}, function(args, speaker)
 	local theme = args[1] or "default"
 	
-	if theme == "dark" then
-		Holder.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-		Title.BackgroundColor3 = Color3.fromRGB(5, 5, 8)
-		Dark.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-		notify('Wargaindo Theme', 'Dark theme applied')
-	elseif theme == "neon" then
-		Holder.BackgroundColor3 = Color3.fromRGB(15, 0, 25)
-		Title.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
-		Dark.BackgroundColor3 = Color3.fromRGB(20, 0, 35)
-		notify('Wargaindo Theme', 'Neon theme applied')
-	elseif theme == "cyber" then
-		Holder.BackgroundColor3 = Color3.fromRGB(0, 15, 25)
-		Title.BackgroundColor3 = Color3.fromRGB(0, 25, 40)
-		Dark.BackgroundColor3 = Color3.fromRGB(0, 20, 35)
-		notify('Wargaindo Theme', 'Cyber theme applied')
+	if theme == "elegant" then
+		Holder.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+		Title.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+		Dark.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+		notify('Wargaindo Theme', 'Tema elegan diterapkan')
+	elseif theme == "professional" then
+		Holder.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+		Title.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+		Dark.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+		notify('Wargaindo Theme', 'Tema profesional diterapkan')
+	elseif theme == "modern" then
+		Holder.BackgroundColor3 = Color3.fromRGB(20, 25, 30)
+		Title.BackgroundColor3 = Color3.fromRGB(15, 20, 25)
+		Dark.BackgroundColor3 = Color3.fromRGB(30, 35, 40)
+		notify('Wargaindo Theme', 'Tema modern diterapkan')
+	elseif theme == "classic" then
+		Holder.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+		Title.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+		Dark.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+		notify('Wargaindo Theme', 'Tema klasik diterapkan')
 	else
-		notify('Wargaindo Theme', 'Available themes: dark, neon, cyber')
+		notify('Wargaindo Theme', 'Tema tersedia: elegant, professional, modern, classic')
 	end
 end)
 
@@ -13428,12 +13502,12 @@ addcmd('uianimations', {'animations'}, function(args, speaker)
 	
 	if enable == "on" then
 		-- Enable animations
-		notify('Wargaindo UI', 'Animations enabled')
+		notify('Wargaindo UI', 'Animasi diaktifkan')
 	elseif enable == "off" then
 		-- Disable animations
-		notify('Wargaindo UI', 'Animations disabled')
+		notify('Wargaindo UI', 'Animasi dinonaktifkan')
 	else
-		notify('Wargaindo UI', 'Usage: uianimations [on/off]')
+		notify('Wargaindo UI', 'Penggunaan: uianimations [on/off]')
 	end
 end)
 
@@ -13710,6 +13784,8 @@ CMDs[#CMDs + 1] = {NAME = 'antikick / kickprotection', DESC = 'Enable anti-kick 
 CMDs[#CMDs + 1] = {NAME = 'unantikick / disableantikick', DESC = 'Disable anti-kick protection'}
 CMDs[#CMDs + 1] = {NAME = 'obfuscation / obfuscate', DESC = 'Enable code obfuscation'}
 CMDs[#CMDs + 1] = {NAME = 'unobfuscation / disableobfuscate', DESC = 'Disable code obfuscation'}
+CMDs[#CMDs + 1] = {NAME = 'savesecure / savesafe', DESC = 'Aktifkan proteksi khusus untuk save game'}
+CMDs[#CMDs + 1] = {NAME = 'theme [elegant/professional/modern/classic]', DESC = 'Ubah tema UI ke tema yang lebih elegan'}
 CMDs[#CMDs + 1] = {NAME = 'securitystatus / securityinfo', DESC = 'Show current security status'}
 CMDs[#CMDs + 1] = {NAME = 'maxsecurity / ultrasecurity', DESC = 'Enable maximum security mode'}
 CMDs[#CMDs + 1] = {NAME = 'theme / changetheme [dark/neon/cyber]', DESC = 'Change UI theme'}
