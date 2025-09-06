@@ -23,14 +23,6 @@ Enhanced version of Infinite Yield with 50+ new features and improved security.
 - Modern dark theme UI
 - Better error handling and performance
 
-## Developers
-### Original Creator: Edge
-### Enhanced by: Wargaindo Team
-
-### Developer: Moon
-### Developer: Zwolf
-### Developer: Toon
-
 ## Usage
 Wargaindo includes all original Infinite Yield commands plus many new enhanced features. Use the command bar to access all features!
 

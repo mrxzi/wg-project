@@ -13339,6 +13339,49 @@ addcmd('serverhop', {'sh'}, function(args, speaker)
 	end
 end)
 
+addcmd('loadwg', {'loadwargaindo', 'wgload'}, function(args, speaker)
+	local url = "https://raw.githubusercontent.com/mrxzi/wg-project/main/source"
+	
+	notify('Wargaindo Loader', 'Loading Wargaindo from GitHub...')
+	
+	spawn(function()
+		local success, result = pcall(function()
+			local script = game:HttpGet(url)
+			loadstring(script)()
+		end)
+		
+		if success then
+			notify('Wargaindo Loader', 'Successfully loaded Wargaindo from GitHub!')
+		else
+			notify('Wargaindo Loader', 'Failed to load: ' .. tostring(result))
+		end
+	end)
+end)
+
+addcmd('loadstring', {'load'}, function(args, speaker)
+	if not args[1] then
+		notify('Wargaindo Loader', 'Usage: loadstring [url]')
+		return
+	end
+	
+	local url = args[1]
+	
+	notify('Wargaindo Loader', 'Loading script from: ' .. url)
+	
+	spawn(function()
+		local success, result = pcall(function()
+			local script = game:HttpGet(url)
+			loadstring(script)()
+		end)
+		
+		if success then
+			notify('Wargaindo Loader', 'Script loaded successfully!')
+		else
+			notify('Wargaindo Loader', 'Failed to load script: ' .. tostring(result))
+		end
+	end)
+end)
+
 -- Add new command descriptions
 CMDs[#CMDs + 1] = {NAME = 'wargaindo / wg', DESC = 'Shows Wargaindo information'}
 CMDs[#CMDs + 1] = {NAME = 'securemode / security', DESC = 'Enable enhanced security mode'}
@@ -13357,3 +13400,5 @@ CMDs[#CMDs + 1] = {NAME = 'stopfarm / unfarm', DESC = 'Stop auto farming'}
 CMDs[#CMDs + 1] = {NAME = 'antiafk / antikick', DESC = 'Enhanced anti-AFK system'}
 CMDs[#CMDs + 1] = {NAME = 'rejoin / rj', DESC = 'Rejoin current server'}
 CMDs[#CMDs + 1] = {NAME = 'serverhop / sh', DESC = 'Enhanced server hopping'}
+CMDs[#CMDs + 1] = {NAME = 'loadwg / loadwargaindo / wgload', DESC = 'Load Wargaindo from GitHub repository'}
+CMDs[#CMDs + 1] = {NAME = 'loadstring / load [url]', DESC = 'Load and execute script from URL'}
