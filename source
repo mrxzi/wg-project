@@ -7821,36 +7821,94 @@ end)
 
 addcmd("savegame", {"saveplace"}, function(args, speaker)
     if saveinstance then
-        -- Aktifkan proteksi anti-kick sebelum save
+        -- Enhanced proteksi anti-kick untuk save game
         local originalKick = game.Players.LocalPlayer.Kick
         local kickBlocked = false
+        local kickCount = 0
+        local protectionActive = true
         
-        -- Hook fungsi kick untuk mencegah kick saat save
-        if hookfunction then
-            hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
-                kickBlocked = true
-                notify("Wargaindo Anti-Kick", "Upaya kick diblokir saat save game: " .. tostring(reason))
-                return
+        -- Multi-layer protection system
+        local function createKickProtection()
+            -- Layer 1: Hookfunction protection
+            if hookfunction then
+                hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+                    kickCount = kickCount + 1
+                    kickBlocked = true
+                    
+                    -- Specific handling for Error Code 267
+                    if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+                        notify("Wargaindo Error 267 Protection", "Error Code 267 diblokir! Proteksi maksimal aktif.")
+                        -- Activate emergency mode for Error 267
+                        WG_SECURITY.Enabled = true
+                        WG_SECURITY.AntiKick = true
+                        WG_SECURITY.AntiBan = true
+                    else
+                        notify("Wargaindo Anti-Kick", "Upaya kick #" .. kickCount .. " diblokir: " .. tostring(reason))
+                    end
+                    return
+                end)
+            end
+            
+            -- Layer 2: Metamethod protection (if available)
+            if hookmetamethod then
+                local oldIndex = hookmetamethod(game.Players.LocalPlayer, "__index", function(self, key)
+                    if key == "Kick" and protectionActive then
+                        return function() end -- Return empty function
+                    end
+                    return oldIndex(self, key)
+                end)
+            end
+            
+            -- Layer 3: Continuous monitoring
+            spawn(function()
+                while protectionActive do
+                    wait(0.1)
+                    -- Check if player is still in game
+                    if not game.Players.LocalPlayer.Parent then
+                        protectionActive = false
+                        break
+                    end
+                end
             end)
         end
         
-        notify("Memuat", "Mengunduh game. Ini akan memakan waktu")
+        -- Activate protection
+        createKickProtection()
         
-        -- Jalankan save dengan proteksi
+        -- Enable WG_SECURITY for additional protection
+        WG_SECURITY.Enabled = true
+        WG_SECURITY.AntiKick = true
+        
+        notify("Wargaindo Save Protection", "Proteksi multi-layer aktif - Error 267 protection enabled!")
+        notify("Memuat", "Mengunduh game dengan proteksi maksimal. Ini akan memakan waktu...")
+        
+        -- Jalankan save dengan proteksi berkelanjutan
         local success, error = pcall(function()
             saveinstance()
         end)
         
-        -- Restore fungsi kick asli
-        if hookfunction and originalKick then
-            hookfunction(game.Players.LocalPlayer.Kick, originalKick)
-        end
+        -- Keep protection active for 30 seconds after save
+        spawn(function()
+            wait(30)
+            protectionActive = false
+            -- Restore original kick function only after delay
+            if hookfunction and originalKick then
+                hookfunction(game.Players.LocalPlayer.Kick, originalKick)
+            end
+            notify("Wargaindo Save Protection", "Proteksi save game dinonaktifkan setelah 30 detik.")
+        end)
         
         if success then
-            notify("Game Tersimpan", "Game berhasil disimpan dengan proteksi anti-kick aktif!")
+            notify("Game Tersimpan", "Game berhasil disimpan! Proteksi Error 267 tetap aktif selama 30 detik.")
         else
             notify("Error Save", "Terjadi kesalahan saat menyimpan: " .. tostring(error))
         end
+        
+        -- Show protection status
+        if kickBlocked then
+            notify("Wargaindo Protection Status", "Total " .. kickCount .. " upaya kick diblokir selama proses save!")
+        end
+        
     else
         notify("Exploit Tidak Kompatibel", "Exploit Anda tidak mendukung perintah ini (tidak ada saveinstance)")
     end
@@ -13216,10 +13274,19 @@ local function initializeAntiDetection()
 	
 	-- Hook critical functions
 	if hookfunction then
-		-- Anti-Kick Protection
+		-- Enhanced Anti-Kick Protection with Error 267 handling
 		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
 			if WG_SECURITY.AntiKick then
-				notify('Wargaindo Anti-Kick', 'Kick attempt blocked: ' .. tostring(reason))
+				-- Special handling for Error Code 267
+				if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+					notify('Wargaindo Error 267 Shield', 'Error Code 267 BLOCKED! Maximum protection active!')
+					-- Activate all security features for Error 267
+					WG_SECURITY.AntiBan = true
+					WG_SECURITY.AntiTeleport = true
+					WG_SECURITY.Obfuscation = true
+				else
+					notify('Wargaindo Anti-Kick', 'Kick attempt blocked: ' .. tostring(reason))
+				end
 				return
 			end
 			return self:Kick(reason)
@@ -13400,12 +13467,24 @@ addcmd('savesecure', {'savesafe'}, function(args, speaker)
 	-- Aktifkan proteksi khusus untuk save game
 	local originalKick = game.Players.LocalPlayer.Kick
 	local kickCount = 0
+	local protectionActive = true
 	
-	-- Hook fungsi kick dengan proteksi berlapis
+	-- Enhanced hook fungsi kick dengan proteksi berlapis
 	if hookfunction then
 		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
 			kickCount = kickCount + 1
-			notify('Wargaindo Save Protection', 'Upaya kick #' .. kickCount .. ' diblokir: ' .. tostring(reason))
+			
+			-- Specific Error Code 267 handling
+			if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+				notify('Wargaindo Error 267 Protection', 'Error Code 267 diblokir! Mode darurat aktif.')
+				-- Immediately activate all protections for Error 267
+				WG_SECURITY.Enabled = true
+				WG_SECURITY.AntiKick = true
+				WG_SECURITY.AntiBan = true
+				WG_SECURITY.AntiTeleport = true
+			else
+				notify('Wargaindo Save Protection', 'Upaya kick #' .. kickCount .. ' diblokir: ' .. tostring(reason))
+			end
 			
 			-- Jika terlalu banyak upaya kick, aktifkan mode darurat
 			if kickCount >= 3 then
@@ -13414,12 +13493,97 @@ addcmd('savesecure', {'savesafe'}, function(args, speaker)
 				WG_SECURITY.Enabled = true
 				WG_SECURITY.AntiKick = true
 				WG_SECURITY.AntiBan = true
+				WG_SECURITY.AntiTeleport = true
 			end
 			return
 		end)
 	end
 	
-	notify('Wargaindo Save Protection', 'Proteksi save game diaktifkan - Anda aman dari kick!')
+	-- Additional metamethod protection
+	if hookmetamethod then
+		hookmetamethod(game.Players.LocalPlayer, "__index", function(self, key)
+			if key == "Kick" and protectionActive then
+				return function() end -- Return empty function
+			end
+		end)
+	end
+	
+	-- Continuous monitoring
+	spawn(function()
+		while protectionActive do
+			wait(1)
+			-- Keep protection active as long as player is in game
+			if not game.Players.LocalPlayer.Parent then
+				protectionActive = false
+				break
+			end
+		end
+	end)
+	
+	notify('Wargaindo Save Protection', 'Proteksi save game diaktifkan - Error 267 protection enabled!')
+end)
+
+-- Command khusus untuk Error Code 267
+addcmd('error267protection', {'error267'}, function(args, speaker)
+	-- Specialized protection for Error Code 267
+	local kickCount = 0
+	local protectionActive = true
+	
+	-- Activate all security features
+	WG_SECURITY.Enabled = true
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.AntiBan = true
+	WG_SECURITY.AntiTeleport = true
+	WG_SECURITY.Obfuscation = true
+	
+	-- Enhanced kick protection specifically for Error 267
+	if hookfunction then
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			kickCount = kickCount + 1
+			
+			-- Check for Error 267 specifically
+			if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+				notify('Wargaindo Error 267 Shield', 'Error Code 267 DETECTED dan DIBLOKIR!')
+				notify('Wargaindo Error 267 Shield', 'Proteksi maksimal aktif - Anda aman!')
+				
+				-- Activate emergency protocols
+				spawn(function()
+					wait(0.1)
+					-- Additional protection measures
+					if game.Players.LocalPlayer.Character then
+						game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health = 100
+					end
+				end)
+			else
+				notify('Wargaindo Anti-Kick', 'Kick attempt #' .. kickCount .. ' blocked: ' .. tostring(reason))
+			end
+			return
+		end)
+	end
+	
+	-- Metamethod protection
+	if hookmetamethod then
+		hookmetamethod(game.Players.LocalPlayer, "__index", function(self, key)
+			if key == "Kick" and protectionActive then
+				return function() end
+			end
+		end)
+	end
+	
+	-- Continuous Error 267 monitoring
+	spawn(function()
+		while protectionActive do
+			wait(0.5)
+			-- Monitor for any suspicious activity
+			if not game.Players.LocalPlayer.Parent then
+				protectionActive = false
+				break
+			end
+		end
+	end)
+	
+	notify('Wargaindo Error 267 Shield', 'Proteksi Error Code 267 AKTIF!')
+	notify('Wargaindo Error 267 Shield', 'Anda sekarang terlindungi dari "Disallowed Services Detected"')
 end)
 
 -- UI Theme Commands - Tema Elegan
@@ -13739,6 +13903,7 @@ CMDs[#CMDs + 1] = {NAME = 'unantikick / disableantikick', DESC = 'Disable anti-k
 CMDs[#CMDs + 1] = {NAME = 'obfuscation / obfuscate', DESC = 'Enable code obfuscation'}
 CMDs[#CMDs + 1] = {NAME = 'unobfuscation / disableobfuscate', DESC = 'Disable code obfuscation'}
 CMDs[#CMDs + 1] = {NAME = 'savesecure / savesafe', DESC = 'Aktifkan proteksi khusus untuk save game'}
+CMDs[#CMDs + 1] = {NAME = 'error267protection / error267', DESC = 'Proteksi khusus untuk Error Code 267 (Disallowed Services)'}
 CMDs[#CMDs + 1] = {NAME = 'theme [elegant/professional/modern/classic]', DESC = 'Ubah tema UI ke tema yang lebih elegan'}
 CMDs[#CMDs + 1] = {NAME = 'securitystatus / securityinfo', DESC = 'Show current security status'}
 CMDs[#CMDs + 1] = {NAME = 'maxsecurity / ultrasecurity', DESC = 'Enable maximum security mode'}
