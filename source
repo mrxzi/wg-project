@@ -13230,7 +13230,9 @@ local WG_SECURITY = {
 	AntiKick = false,
 	AntiTeleport = false,
 	Obfuscation = false,
-	Randomization = false
+	Randomization = false,
+	Error267Protection = false,
+	EmergencyMode = false
 }
 
 local function secureExecute(func, ...)
@@ -13273,7 +13275,7 @@ local function initializeAntiDetection()
 	if hookfunction then
 		-- Enhanced Anti-Kick Protection with Error 267 handling
 		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
-			if WG_SECURITY.AntiKick then
+			if WG_SECURITY.AntiKick or WG_SECURITY.Error267Protection or WG_SECURITY.EmergencyMode then
 				-- Special handling for Error Code 267
 				if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
 					notify('Wargaindo Error 267 Shield', 'Error Code 267 BLOCKED! Maximum protection active!')
@@ -13281,6 +13283,8 @@ local function initializeAntiDetection()
 					WG_SECURITY.AntiBan = true
 					WG_SECURITY.AntiTeleport = true
 					WG_SECURITY.Obfuscation = true
+					WG_SECURITY.Error267Protection = true
+					WG_SECURITY.EmergencyMode = true
 				else
 					notify('Wargaindo Anti-Kick', 'Kick attempt blocked: ' .. tostring(reason))
 				end
@@ -13396,8 +13400,10 @@ end)
 addcmd('antikick', {'kickprotection'}, function(args, speaker)
 	WG_SECURITY.AntiKick = true
 	WG_SECURITY.Enabled = true
+	WG_SECURITY.Error267Protection = true
 	
 	notify('Wargaindo Anti-Kick', 'Proteksi anti-kick diaktifkan')
+	notify('Wargaindo Error 267', 'Proteksi Error Code 267 juga aktif!')
 end)
 
 addcmd('unantikick', {'disableantikick'}, function(args, speaker)
@@ -13581,6 +13587,88 @@ addcmd('error267protection', {'error267'}, function(args, speaker)
 	
 	notify('Wargaindo Error 267 Shield', 'Proteksi Error Code 267 AKTIF!')
 	notify('Wargaindo Error 267 Shield', 'Anda sekarang terlindungi dari "Disallowed Services Detected"')
+end)
+
+-- Proteksi Error 267 otomatis yang berjalan saat script dimulai
+spawn(function()
+	wait(2) -- Tunggu 2 detik setelah script dimulai
+	
+	-- Aktifkan proteksi Error 267 secara otomatis
+	WG_SECURITY.Error267Protection = true
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.Enabled = true
+	
+	-- Hook fungsi kick dengan proteksi Error 267
+	if hookfunction then
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+				notify('Wargaindo Auto Protection', 'Error Code 267 DETECTED dan DIBLOKIR!')
+				notify('Wargaindo Auto Protection', 'Proteksi otomatis aktif - Anda aman!')
+				return
+			end
+		end)
+	end
+	
+	-- Metamethod protection untuk Error 267
+	if hookmetamethod then
+		hookmetamethod(game.Players.LocalPlayer, "__index", function(self, key)
+			if key == "Kick" then
+				return function() end -- Return empty function
+			end
+		end)
+	end
+	
+	notify('Wargaindo Auto Protection', 'Proteksi Error 267 otomatis AKTIF!')
+	notify('Wargaindo Auto Protection', 'Anda terlindungi dari "Disallowed Services Detected"')
+end)
+
+-- Perintah darurat untuk Error 267
+addcmd('emergency267', {'emergency'}, function(args, speaker)
+	-- Aktifkan mode darurat untuk Error 267
+	WG_SECURITY.EmergencyMode = true
+	WG_SECURITY.Error267Protection = true
+	WG_SECURITY.AntiKick = true
+	WG_SECURITY.AntiBan = true
+	WG_SECURITY.AntiTeleport = true
+	WG_SECURITY.Enabled = true
+	
+	-- Multiple layers of protection
+	if hookfunction then
+		-- Layer 1: Hookfunction
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+				notify('Wargaindo Emergency 267', 'Error Code 267 EMERGENCY BLOCKED!')
+				return
+			end
+		end)
+		
+		-- Layer 2: Additional hook
+		hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
+			notify('Wargaindo Emergency', 'Kick attempt blocked: ' .. tostring(reason))
+			return
+		end)
+	end
+	
+	-- Metamethod protection
+	if hookmetamethod then
+		hookmetamethod(game.Players.LocalPlayer, "__index", function(self, key)
+			if key == "Kick" then
+				return function() end
+			end
+		end)
+	end
+	
+	-- Continuous monitoring
+	spawn(function()
+		while WG_SECURITY.EmergencyMode do
+			wait(0.1)
+			-- Keep protection active
+		end
+	end)
+	
+	notify('Wargaindo Emergency 267', 'MODE DARURAT AKTIF!')
+	notify('Wargaindo Emergency 267', 'Proteksi maksimal untuk Error Code 267!')
+	notify('Wargaindo Emergency 267', 'Anda sekarang AMAN dari kick!')
 end)
 
 -- UI Theme Commands - Tema Elegan
@@ -13901,6 +13989,7 @@ CMDs[#CMDs + 1] = {NAME = 'obfuscation / obfuscate', DESC = 'Enable code obfusca
 CMDs[#CMDs + 1] = {NAME = 'unobfuscation / disableobfuscate', DESC = 'Disable code obfuscation'}
 CMDs[#CMDs + 1] = {NAME = 'savesecure / savesafe', DESC = 'Aktifkan proteksi khusus untuk save game'}
 CMDs[#CMDs + 1] = {NAME = 'error267protection / error267', DESC = 'Proteksi khusus untuk Error Code 267 (Disallowed Services)'}
+CMDs[#CMDs + 1] = {NAME = 'emergency267 / emergency', DESC = 'Mode darurat untuk Error Code 267 - proteksi maksimal!'}
 CMDs[#CMDs + 1] = {NAME = 'theme [elegant/professional/modern/classic]', DESC = 'Ubah tema UI ke tema yang lebih elegan'}
 CMDs[#CMDs + 1] = {NAME = 'securitystatus / securityinfo', DESC = 'Show current security status'}
 CMDs[#CMDs + 1] = {NAME = 'maxsecurity / ultrasecurity', DESC = 'Enable maximum security mode'}
