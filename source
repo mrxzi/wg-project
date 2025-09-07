@@ -4479,8 +4479,9 @@ CMDs[#CMDs + 1] = {NAME = 'showiy / unhideiy', DESC = 'Shows IY again'}
 CMDs[#CMDs + 1] = {NAME = 'keepiy', DESC = 'Auto execute IY when you teleport through servers'}
 CMDs[#CMDs + 1] = {NAME = 'unkeepiy', DESC = 'Disable keepiy'}
 CMDs[#CMDs + 1] = {NAME = 'togglekeepiy', DESC = 'Toggles keepiy'}
-CMDs[#CMDs + 1] = {NAME = 'savegame / saveplace', DESC = 'Save game dengan proteksi anti-kick dan Error 267 protection'}
-CMDs[#CMDs + 1] = {NAME = 'saveall / savecomplete / savefull', DESC = 'Save SEMUA isi game dengan lengkap (semua service)'}
+CMDs[#CMDs + 1] = {NAME = 'savegame / saveplace', DESC = 'Save game sederhana - kompatibel dengan semua exploit'}
+CMDs[#CMDs + 1] = {NAME = 'saveall / savecomplete / savefull', DESC = 'Save game lengkap - alternatif savegame'}
+CMDs[#CMDs + 1] = {NAME = 'savesafe / saveprotected', DESC = 'Save game dengan proteksi anti-kick dan Error 267'}
 CMDs[#CMDs + 1] = {NAME = 'clearerror', DESC = 'Clears the annoying box and blur when a game kicks you'}
 CMDs[#CMDs + 1] = {NAME = 'clientantikick / antikick (CLIENT)', DESC = 'Prevents localscripts from kicking you'}
 CMDs[#CMDs + 1] = {NAME = 'clientantiteleport / antiteleport (CLIENT)', DESC = 'Prevents localscripts from teleporting you'}
@@ -7822,53 +7823,16 @@ end)
 
 addcmd("savegame", {"saveplace"}, function(args, speaker)
     if saveinstance then
-        -- Simple anti-kick protection for savegame
-        local originalKick = game.Players.LocalPlayer.Kick
-        local kickBlocked = false
-        
-        -- Basic kick protection
-        if hookfunction then
-            hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
-                kickBlocked = true
-                if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
-                    notify("Wargaindo Error 267 Protection", "Error Code 267 diblokir!")
-                else
-                    notify("Wargaindo Anti-Kick", "Upaya kick diblokir: " .. tostring(reason))
-                end
-                return
-            end)
-        end
-        
-        notify("Wargaindo Save Game", "Memulai proses save game dengan proteksi anti-kick...")
+        notify("Wargaindo Save Game", "Memulai proses save game...")
         notify("Memuat", "Mengunduh seluruh isi game. Ini akan memakan waktu...")
         
-        -- Save dengan opsi lengkap untuk menyimpan semua isi map
+        -- Simple saveinstance call without parameters (most compatible)
         local success, error = pcall(function()
-            saveinstance({
-                -- Simpan semua service penting
-                game.Workspace,
-                game.Lighting,
-                game.SoundService,
-                game.StarterGui,
-                game.StarterPack,
-                game.StarterPlayer,
-                game.ReplicatedStorage,
-                game.ServerStorage,
-                game.ServerScriptService,
-                game.StarterPlayerScripts
-            })
+            saveinstance()
         end)
         
-        -- Restore original kick function
-        if hookfunction and originalKick then
-            hookfunction(game.Players.LocalPlayer.Kick, originalKick)
-        end
-        
         if success then
-            notify("Game Tersimpan", "Game berhasil disimpan dengan lengkap! Semua isi map tersimpan.")
-            if kickBlocked then
-                notify("Wargaindo Protection", "Proteksi anti-kick berhasil memblokir upaya kick!")
-            end
+            notify("Game Tersimpan", "Game berhasil disimpan! Semua isi map tersimpan.")
         else
             notify("Error Save", "Terjadi kesalahan saat menyimpan: " .. tostring(error))
         end
@@ -7882,55 +7846,50 @@ end)
 addcmd("saveall", {"savecomplete", "savefull"}, function(args, speaker)
     if saveinstance then
         notify("Wargaindo Save All", "Menyimpan SEMUA isi game dengan lengkap...")
-        notify("Memuat", "Proses ini akan memakan waktu lebih lama karena menyimpan semua service...")
+        notify("Memuat", "Proses ini akan memakan waktu lebih lama...")
         
-        -- Save dengan proteksi anti-kick
+        local success, error = pcall(function()
+            -- Simple saveinstance call - most compatible
+            saveinstance()
+        end)
+        
+        if success then
+            notify("Save Complete", "SEMUA isi game berhasil disimpan dengan lengkap!")
+            notify("Save Complete", "Termasuk: Workspace, Scripts, Models, Terrain, Services, dll")
+        else
+            notify("Error Save", "Terjadi kesalahan: " .. tostring(error))
+        end
+        
+    else
+        notify("Exploit Tidak Kompatibel", "Exploit tidak mendukung saveinstance")
+    end
+end)
+
+-- Perintah savegame dengan proteksi anti-kick
+addcmd("savesafe", {"saveprotected"}, function(args, speaker)
+    if saveinstance then
+        notify("Wargaindo Save Safe", "Memulai save game dengan proteksi anti-kick...")
+        
+        -- Anti-kick protection
         local originalKick = game.Players.LocalPlayer.Kick
+        local kickBlocked = false
+        
         if hookfunction then
             hookfunction(game.Players.LocalPlayer.Kick, function(self, reason)
-                notify("Wargaindo Anti-Kick", "Upaya kick diblokir: " .. tostring(reason))
+                kickBlocked = true
+                if tostring(reason):find("267") or tostring(reason):find("Disallowed Services") then
+                    notify("Wargaindo Error 267 Protection", "Error Code 267 diblokir!")
+                else
+                    notify("Wargaindo Anti-Kick", "Upaya kick diblokir: " .. tostring(reason))
+                end
                 return
             end)
         end
         
+        notify("Memuat", "Mengunduh game dengan proteksi aktif...")
+        
         local success, error = pcall(function()
-            -- Simpan semua service yang ada di game
-            saveinstance({
-                game.Workspace,
-                game.Lighting,
-                game.SoundService,
-                game.StarterGui,
-                game.StarterPack,
-                game.StarterPlayer,
-                game.ReplicatedStorage,
-                game.ServerStorage,
-                game.ServerScriptService,
-                game.StarterPlayerScripts,
-                game.Players,
-                game.Teams,
-                game.Chat,
-                game.TextService,
-                game.UserInputService,
-                game.RunService,
-                game.HttpService,
-                game.MarketplaceService,
-                game.TeleportService,
-                game.MessagingService,
-                game.DataStoreService,
-                game.BadgeService,
-                game.GamePassService,
-                game.GroupService,
-                game.NotificationService,
-                game.PolicyService,
-                game.ProximityPromptService,
-                game.SocialService,
-                game.StudioService,
-                game.ChangeHistoryService,
-                game.Selection,
-                game.SelectionService,
-                game.TestService,
-                game.Workspace.Terrain
-            })
+            saveinstance()
         end)
         
         -- Restore original kick function
@@ -7939,8 +7898,10 @@ addcmd("saveall", {"savecomplete", "savefull"}, function(args, speaker)
         end
         
         if success then
-            notify("Save Complete", "SEMUA isi game berhasil disimpan dengan lengkap!")
-            notify("Save Complete", "Termasuk: Workspace, Scripts, Models, Terrain, Services, dll")
+            notify("Game Tersimpan", "Game berhasil disimpan dengan proteksi!")
+            if kickBlocked then
+                notify("Wargaindo Protection", "Proteksi anti-kick berhasil memblokir upaya kick!")
+            end
         else
             notify("Error Save", "Terjadi kesalahan: " .. tostring(error))
         end
